@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.8.0/jquery-1.8.0.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+    <div>
+
+    </div>
+    <!-- 单文件上传 -->
+    <input type="file" class="fileInput1" onchange="filechange1()">
+    <!-- 多文件上传 -->
+    <input type="file" class="fileInput2" multiple onchange="filechange2()">
+    <!-- 单文件夹上传 -->
+    <input type="file" class="fileInput3" webkitdirectory multiple onchange="filechange3()">
+    <input type="button" class="btn1" onclick="btn1click()" value="生成token">
+    <input type="button" class="btn1" onclick="btn2click()" value="解析token">
+    <input type="button" class="btn1" onclick="btn3click()" value="下载">
+    <script>
+        var baseURL="http://localhost:3666"
+        // 单文件上传
+        function filechange1(){
+            var file=document.querySelector(".fileInput1").files[0]
+            var formdata=new FormData()
+            formdata.append("file",file)
+            // $.ajax({
+            //     url:baseURL+"/user/upload/file",
+            //     type:"post",
+            //     data:formdata,
+            //     processData: false,   // jQuery不要去处理发送的数据
+            //     contentType: false,   // jQuery不要去设置Content-Type请求头
+            //     success:(res)=>{
+            //         console.log(res)
+            //     },
+            //     error:(err)=>{
+            //         console.log(err)
+            //     }
+            // })
+
+            // axios.post(baseURL+"/user/upload/file",formdata,{headers:{'Content-type':"multipart/form-data"}})
+            // .then(res => {
+            //     console.log(res)
+            // })
+            // .catch(err => {
+            //     console.error(err); 
+            // })
+            axios({
+                method:'post',
+                url: baseURL+"/user/upload/file",
+                data: formdata,
+                headers: {'Content-type':"multipart/form-data"},
+            }).then(res=>{
+                console.log(res)
+            })
+            .catch(err => {
+                console.error(err); 
+            })
+        }
+
+        // 多文件上传
+        function filechange2(){
+            var files=document.querySelector(".fileInput2").files
+            console.log(files)
+            var formdata=new FormData()
+            formdata.append("id","123")
+            formdata.append("name","es")
+            for (const key in files) {
+                if (files[key].name&&files[key].size) {
+                    const file = files[key];
+                    formdata.append("file",file)
+                }
+            }
+            $.ajax({
+                url:baseURL+"/user/upload/file",
+                type:"post",
+                data:formdata,
+                processData: false,   // jQuery不要去处理发送的数据
+                contentType: false,   // jQuery不要去设置Content-Type请求头
+                success:(res)=>{
+                    console.log(res)
+                },
+                error:(err)=>{
+                    console.log(err)
+                }
+            })
+        }
+        // 文件夹上传
+        function filechange3(){
+            var files=document.querySelector(".fileInput3").files
+            console.log(files)
+            var formdata=new FormData()
+            formdata.append("id","123")
+            formdata.append("name","es")
+            for (const key in files) {
+                if (files[key].name&&files[key].size) {
+                    const file = files[key];
+                    formdata.append("file",file)
+                }
+            }
+            $.ajax({
+                url:baseURL+"/user/upload/file",
+                type:"post",
+                data:formdata,
+                processData: false,   // jQuery不要去处理发送的数据
+                contentType: false,   // jQuery不要去设置Content-Type请求头
+                success:(res)=>{
+                    console.log(res)
+                },
+                error:(err)=>{
+                    console.log(err)
+                }
+            })
+        }
+        // 生成token
+        function btn1click(){
+            // $.ajax({
+            //     url:baseURL+"/user/login2",
+            //     type:"post",
+            //     data:{
+            //         name:"test",
+            //         pwd:"123456"
+            //     },
+            //     success:(res)=>{
+            //         localStorage.setItem("token",res.data)
+            //         console.log(res)
+            //     },
+            //     error:(err)=>{
+            //         console.log(err)
+            //     }
+            // })
+            
+            axios({
+                method:'post',
+                url: baseURL+"/user/login2",
+                data: {
+                    name:"test",
+                    pwd:"123456"
+                },
+            }).then(res=>{
+                console.log(res)
+            })
+            .catch(err => {
+                console.error(err); 
+            })
+        }
+        // 解析token
+        // jquery ajax带token请求
+        function btn2click(){
+            var token = localStorage.getItem("token")
+            $.ajaxSetup({   // 方法3
+                // 所有ajax请求发送之后，都会执行以下的函数
+                beforeSend: function(xhr) {
+                    //xhr是原生ajax中网络请求对象，jQuery中已经封装好的
+                    // 利用请求头携带token数据
+                    xhr.setRequestHeader('Authorization', token)
+                }
+            })
+            $.ajax({
+                url:baseURL+"/user/getmsg",
+                type:"post",
+                // headers: {      //请求头  方法1
+                //     'Authorization': token 
+                // },
+                // data:{          //  方法2
+                //     token: token
+                // },
+                success:(res)=>{
+                    console.log(res)
+                },
+                error:(err)=>{
+                    console.log(err)
+                }
+            })
+        }
+
+        function btn3click(){
+            var a=document.createElement("a")
+            a.href=baseURL+"/user/download/"+2
+            a.download="2.png"
+            document.body.appendChild(a)
+            a.click()
+        }
+        
+    </script>
+</body>
+</html>
